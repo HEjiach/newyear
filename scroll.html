@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <title>2026 新春快乐 · 马年大吉 · 卷轴</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        html {
+            scroll-behavior: smooth
+        }
+
+        body {
+            width: 100%;
+            min-height: 100vh;
+            font-family: 'STKaiti', 'KaiTi', 'Noto Serif SC', 'SimSun', serif;
+            background: #1a0505;
+            color: #f5e6c8;
+            overflow-x: hidden;
+        }
+
+        /* ===== 第一屏：卷轴区 ===== */
+        .hero {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            background: radial-gradient(ellipse at 50% 20%, #5c1a1a 0%, #3a0a0a 40%, #1a0505 100%);
+        }
+
+        /* 星空 */
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none
+        }
+
+        .star {
+            position: absolute;
+            background: #fff;
+            border-radius: 50%;
+            animation: twinkle ease-in-out infinite alternate
+        }
+
+        @keyframes twinkle {
+            0% {
+                opacity: .2;
+                transform: scale(.8)
+            }
+
+            100% {
+                opacity: 1;
+                transform: scale(1.3)
+            }
+        }
+
+        /* 梅花 */
+        .petals {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 50;
+            overflow: hidden
+        }
+
+        .petal {
+            position: absolute;
+            opacity: 0;
+            animation: petalFall linear infinite
+        }
+
+        @keyframes petalFall {
+            0% {
+                transform: translateY(-20px) rotate(0deg) translateX(0);
+                opacity: 0
+            }
+
+            8% {
+                opacity: .7
+            }
+
+            50% {
+                transform: translateY(50vh) rotate(180deg) translateX(30px)
+            }
+
+            85% {
+                opacity: .4
+            }
+
+            100% {
+                transform: translateY(105vh) rotate(400deg) translateX(-20px);
+                opacity: 0
+            }
+        }
+
+        /* 灯笼 */
+        .lanterns {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 40;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 1.5s ease
+        }
+
+        .lanterns.show {
+            opacity: 1
+        }
+
+        .lantern {
+            position: absolute;
+            top: -8px;
+            animation: lanternSway 4s ease-in-out infinite
+        }
+
+        .lantern:nth-child(1) {
+            left: 3%
+        }
+
+        .lantern:nth-child(2) {
+            right: 3%;
+            animation-delay: 1.2s
+        }
+
+        .lantern:nth-child(3) {
+            left: 18%;
+            animation-delay: 2s
+        }
+
+        .lantern:nth-child(4) {
+            right: 18%;
+            animation-delay: .6s
+        }
+
+        .lantern-string {
+            width: 2px;
+            height: clamp(15px, 4vw, 28px);
+            background: linear-gradient(#D4A843, #8B6914);
+            margin: 0 auto
+        }
+
+        .lantern-top {
+            width: clamp(14px, 4vw, 24px);
+            height: 5px;
+            background: linear-gradient(#D4A843, #8B6914);
+            border-radius: 3px;
+            margin: 0 auto
+        }
+
+        .lantern-body {
+            width: clamp(24px, 7vw, 40px);
+            height: clamp(32px, 9vw, 52px);
+            background: radial-gradient(ellipse, #ff4444, #cc0000);
+            border-radius: 50%;
+            box-shadow: 0 0 15px rgba(255, 50, 0, .5), inset 0 0 10px rgba(255, 200, 0, .3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative
+        }
+
+        .lantern-body::before {
+            content: '福';
+            font-size: clamp(10px, 3vw, 16px);
+            color: #ffd700;
+            font-weight: 900
+        }
+
+        .lantern-body::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 10px;
+            background: linear-gradient(#ffd700, #ff8c00);
+            border-radius: 0 0 3px 3px
+        }
+
+        .lantern-tassel {
+            width: 2px;
+            height: clamp(10px, 3vw, 18px);
+            background: linear-gradient(#ffd700, transparent);
+            margin: 0 auto
+        }
+
+        @keyframes lanternSway {
+
+            0%,
+            100% {
+                transform: rotate(-5deg)
+            }
+
+            50% {
+                transform: rotate(5deg)
+            }
+        }
+
+        /* 烟花Canvas */
+        .fireworks-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 1s ease
+        }
+
+        .fireworks-canvas.show {
+            opacity: 1
+        }
+
+        /* 卷轴 */
+        .scroll-wrap {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 82vh;
+            max-height: 680px
+        }
+
+        .rod {
+            width: 26px;
+            flex-shrink: 0;
+            height: 82vh;
+            max-height: 680px;
+            background: linear-gradient(90deg, #8B6914, #D4A843, #C9962C, #A67B20, #D4A843, #8B6914);
+            border-radius: 13px;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, .6), -2px 0 10px rgba(0, 0, 0, .6), inset 0 0 8px rgba(255, 215, 0, .2);
+            position: relative;
+            z-index: 12;
+            transition: transform 2.5s cubic-bezier(.25, .46, .45, .94)
+        }
+
+        .rod::before,
+        .rod::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 34px;
+            height: 12px;
+            background: linear-gradient(180deg, #e8c860, #8B6914);
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, .3)
+        }
+
+        .rod::before {
+            top: -3px
+        }
+
+        .rod::after {
+            bottom: -3px
+        }
+
+        .paper-container {
+            width: 0;
+            overflow: hidden;
+            height: 82vh;
+            max-height: 680px;
+            transition: width 2.5s cubic-bezier(.25, .46, .45, .94);
+            position: relative;
+            z-index: 11
+        }
+
+        .paper {
+            width: clamp(280px, 75vw, 480px);
+            height: 100%;
+            background: repeating-linear-gradient(0deg, transparent, transparent 28px, rgba(180, 150, 100, .06) 28px, rgba(180, 150, 100, .06) 29px), radial-gradient(ellipse at 50% 50%, #f8f0dc, #f0e4c8, #e8d8b4);
+            box-shadow: inset 0 0 60px rgba(139, 105, 20, .12);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: clamp(16px, 4vh, 36px) clamp(14px, 3.5vw, 32px);
+            position: relative;
+            overflow: hidden
+        }
+
+        .paper::after {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            right: 8px;
+            bottom: 8px;
+            border: 1.5px solid rgba(201, 169, 110, .3);
+            pointer-events: none
+        }
+
+        .scroll-wrap.open .paper-container {
+            width: clamp(280px, 75vw, 480px)
+        }
+
+        .scroll-wrap.open .rod-left {
+            transform: translateX(-3px)
+        }
+
+        .scroll-wrap.open .rod-right {
+            transform: translateX(3px)
+        }
+
+        /* 封面 */
+        .cover-seal {
+            position: absolute;
+            z-index: 15;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            animation: sealPulse 2s ease-in-out infinite
+        }
+
+        .cover-seal.hidden {
+            display: none
+        }
+
+        .seal-stamp {
+            width: clamp(60px, 18vw, 90px);
+            height: clamp(60px, 18vw, 90px);
+            border: 3px solid #cc0000;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #cc0000;
+            font-size: clamp(22px, 7vw, 36px);
+            font-weight: 900;
+            letter-spacing: 2px;
+            line-height: 1.1;
+            background: rgba(255, 255, 255, .1);
+            box-shadow: 0 0 25px rgba(200, 0, 0, .4);
+            transform: rotate(-8deg);
+            text-align: center
+        }
+
+        .cover-hint {
+            color: rgba(255, 220, 180, .8);
+            font-size: clamp(12px, 3vw, 15px);
+            margin-top: 14px;
+            letter-spacing: .2em
+        }
+
+        @keyframes sealPulse {
+
+            0%,
+            100% {
+                transform: scale(1)
+            }
+
+            50% {
+                transform: scale(1.06)
+            }
+        }
+
+        /* 卷轴内文字 */
+        .content {
+            text-align: center;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center
+        }
+
+        .line {
+            opacity: 0;
+            transform: translateY(15px);
+            transition: opacity .8s ease, transform .8s ease;
+            color: #2c1810
+        }
+
+        .line.show {
+            opacity: 1;
+            transform: translateY(0)
+        }
+
+        .title-horse {
+            font-size: clamp(2.2rem, 9vw, 3.5rem);
+            margin-bottom: 2px
+        }
+
+        .title-main {
+            font-size: clamp(1.6rem, 6.5vw, 2.6rem);
+            font-weight: 900;
+            color: #8B0000;
+            letter-spacing: .2em;
+            margin-bottom: clamp(8px, 1.5vh, 14px)
+        }
+
+        .divider {
+            width: clamp(80px, 35vw, 180px);
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #c9a96e, #8B6914, #c9a96e, transparent);
+            margin: clamp(5px, 1vh, 10px) 0
+        }
+
+        .blessing-pair {
+            font-size: clamp(.95rem, 4.2vw, 1.4rem);
+            letter-spacing: .16em;
+            line-height: 1.8;
+            color: #3a1f10;
+            font-weight: 700
+        }
+
+        .blessing-pair span {
+            margin: 0 .25em
+        }
+
+        .footer-text {
+            font-size: clamp(.8rem, 3vw, 1rem);
+            color: #6b4226;
+            letter-spacing: .12em;
+            line-height: 1.8;
+            margin-top: clamp(4px, 1vh, 10px)
+        }
+
+        .stamp {
+            margin-top: clamp(8px, 1.5vh, 16px);
+            width: clamp(36px, 10vw, 50px);
+            height: clamp(36px, 10vw, 50px);
+            border: 2.5px solid #cc0000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #cc0000;
+            font-size: clamp(13px, 3.5vw, 18px);
+            font-weight: 900;
+            transform: scale(0);
+            transition: transform .6s cubic-bezier(.17, .89, .32, 1.28);
+            box-shadow: 0 0 8px rgba(200, 0, 0, .2)
+        }
+
+        .stamp.show {
+            transform: rotate(-12deg) scale(1)
+        }
+
+        .date-text {
+            font-size: clamp(.65rem, 2.2vw, .8rem);
+            color: #9a7848;
+            letter-spacing: .12em;
+            margin-top: clamp(4px, .8vh, 8px);
+            opacity: 0;
+            transition: opacity .8s ease
+        }
+
+        .date-text.show {
+            opacity: 1
+        }
+
+        .ink-horse {
+            position: absolute;
+            bottom: clamp(8px, 2.5vh, 24px);
+            right: clamp(6px, 2.5vw, 16px);
+            font-size: clamp(1.8rem, 7vw, 3rem);
+            opacity: 0;
+            transform: translateX(20px);
+            transition: opacity 1s ease, transform 1s ease
+        }
+
+        .ink-horse.show {
+            opacity: .3;
+            transform: translateX(0)
+        }
+
+        /* 向下箭头提示 */
+        .scroll-hint {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 1s ease;
+            animation: bounceDown 2s ease-in-out infinite
+        }
+
+        .scroll-hint.show {
+            opacity: 1
+        }
+
+        .scroll-hint-text {
+            font-size: 12px;
+            color: rgba(255, 220, 180, .6);
+            letter-spacing: .15em;
+            margin-bottom: 4px
+        }
+
+        .scroll-hint-arrow {
+            font-size: 20px;
+            color: rgba(255, 215, 0, .6)
+        }
+
+        @keyframes bounceDown {
+
+            0%,
+            100% {
+                transform: translateX(-50%) translateY(0)
+            }
+
+            50% {
+                transform: translateX(-50%) translateY(8px)
+            }
+        }
+
+        /* ===== 第二屏以后：滚动内容 ===== */
+        .scroll-content {
+            position: relative;
+            z-index: 20;
+            background: linear-gradient(#1a0505, #2a0808, #1a0505)
+        }
+
+        /* 通用区块 */
+        .section {
+            padding: clamp(40px, 8vh, 80px) clamp(16px, 5vw, 40px);
+            max-width: 600px;
+            margin: 0 auto
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: clamp(1.4rem, 5vw, 2rem);
+            font-weight: 900;
+            color: #ffd700;
+            letter-spacing: .15em;
+            margin-bottom: clamp(20px, 4vh, 40px);
+            text-shadow: 0 0 20px rgba(255, 215, 0, .3);
+            position: relative
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #c9a96e, transparent);
+            margin: 12px auto 0
+        }
+
+        /* 图文卡片 */
+        .card {
+            background: rgba(255, 255, 255, .05);
+            border: 1px solid rgba(201, 169, 110, .15);
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: clamp(24px, 5vh, 40px);
+            backdrop-filter: blur(5px);
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity .8s ease, transform .8s ease
+        }
+
+        .card.visible {
+            opacity: 1;
+            transform: translateY(0)
+        }
+
+        .card-img {
+            width: 100%;
+            display: block;
+            border-bottom: 1px solid rgba(201, 169, 110, .1)
+        }
+
+        .card-body {
+            padding: clamp(16px, 4vw, 28px)
+        }
+
+        .card-title {
+            font-size: clamp(1.1rem, 4vw, 1.4rem);
+            color: #ffd700;
+            font-weight: 900;
+            letter-spacing: .1em;
+            margin-bottom: 8px
+        }
+
+        .card-text {
+            font-size: clamp(.85rem, 3.2vw, 1rem);
+            color: rgba(245, 230, 200, .8);
+            line-height: 1.8;
+            letter-spacing: .05em
+        }
+
+        /* 祝福语网格 */
+        .wish-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: clamp(12px, 3vw, 20px);
+            margin-bottom: clamp(24px, 5vh, 40px)
+        }
+
+        .wish-item {
+            background: linear-gradient(135deg, rgba(139, 0, 0, .3), rgba(200, 0, 0, .15));
+            border: 1px solid rgba(200, 80, 80, .2);
+            border-radius: 12px;
+            padding: clamp(14px, 3vw, 24px);
+            text-align: center;
+            opacity: 0;
+            transform: scale(.9);
+            transition: opacity .6s ease, transform .6s ease
+        }
+
+        .wish-item.visible {
+            opacity: 1;
+            transform: scale(1)
+        }
+
+        .wish-emoji {
+            font-size: clamp(1.8rem, 6vw, 2.5rem);
+            margin-bottom: 6px
+        }
+
+        .wish-text {
+            font-size: clamp(.8rem, 3vw, .95rem);
+            color: #ffd700;
+            font-weight: 700;
+            letter-spacing: .1em;
+            line-height: 1.6
+        }
+
+        /* 大图横幅 */
+        .banner {
+            width: 100%;
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: clamp(24px, 5vh, 40px);
+            position: relative;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity .8s ease, transform .8s ease;
+            border: 1px solid rgba(201, 169, 110, .15)
+        }
+
+        .banner.visible {
+            opacity: 1;
+            transform: translateY(0)
+        }
+
+        .banner img {
+            width: 100%;
+            display: block
+        }
+
+        .banner-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: clamp(12px, 3vw, 24px);
+            background: linear-gradient(transparent, rgba(0, 0, 0, .7));
+            text-align: center
+        }
+
+        .banner-text {
+            font-size: clamp(1rem, 4vw, 1.3rem);
+            color: #ffd700;
+            font-weight: 900;
+            letter-spacing: .15em;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, .5)
+        }
+
+        /* 分隔装饰 */
+        .separator {
+            text-align: center;
+            padding: clamp(20px, 4vh, 40px) 0;
+            font-size: clamp(1rem, 3.5vw, 1.3rem);
+            color: rgba(201, 169, 110, .3);
+            letter-spacing: 1em
+        }
+
+        /* 页脚 */
+        .page-footer {
+            text-align: center;
+            padding: clamp(30px, 6vh, 60px) 20px;
+            background: linear-gradient(transparent, rgba(0, 0, 0, .3))
+        }
+
+        .footer-horse {
+            font-size: clamp(3rem, 10vw, 5rem);
+            margin-bottom: 10px
+        }
+
+        .footer-wish {
+            font-size: clamp(1.2rem, 4.5vw, 1.8rem);
+            color: #ffd700;
+            font-weight: 900;
+            letter-spacing: .2em;
+            margin-bottom: 8px
+        }
+
+        .footer-sub {
+            font-size: clamp(.75rem, 2.5vw, .9rem);
+            color: rgba(245, 230, 200, .5);
+            letter-spacing: .1em
+        }
+
+        /* 音乐按钮 */
+        .music-btn {
+            position: fixed;
+            top: 14px;
+            right: 14px;
+            z-index: 60;
+            width: 34px;
+            height: 34px;
+            border: 2px solid rgba(212, 168, 67, .7);
+            border-radius: 50%;
+            background: rgba(90, 30, 30, .6);
+            backdrop-filter: blur(5px);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity .5s ease
+        }
+
+        .music-btn.show {
+            opacity: 1
+        }
+
+        .music-btn .note {
+            font-size: 16px;
+            color: #D4A843;
+            animation: noteRotate 2.5s linear infinite
+        }
+
+        .music-btn.paused .note {
+            animation-play-state: paused
+        }
+
+        @keyframes noteRotate {
+            from {
+                transform: rotate(0)
+            }
+
+            to {
+                transform: rotate(360deg)
+            }
+        }
+
+        /* 红包雨 */
+        .hongbao-rain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 45;
+            pointer-events: none;
+            overflow: hidden;
+            opacity: 0;
+            transition: opacity 1s ease
+        }
+
+        .hongbao-rain.show {
+            opacity: 1
+        }
+
+        .hongbao {
+            position: absolute;
+            top: -60px;
+            animation: hongbaoFall linear infinite
+        }
+
+        @keyframes hongbaoFall {
+            0% {
+                transform: translateY(-60px) rotate(0deg) scale(.8);
+                opacity: 0
+            }
+
+            5% {
+                opacity: .85
+            }
+
+            50% {
+                transform: translateY(50vh) rotate(180deg) scale(1)
+            }
+
+            85% {
+                opacity: .5
+            }
+
+            100% {
+                transform: translateY(110vh) rotate(380deg) scale(.6);
+                opacity: 0
+            }
+        }
+
+        /* 视频区域 */
+        .video-section {
+            padding: clamp(30px, 6vh, 60px) clamp(16px, 5vw, 40px);
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center
+        }
+
+        .video-title {
+            font-size: clamp(1.4rem, 5vw, 2rem);
+            font-weight: 900;
+            color: #ffd700;
+            letter-spacing: .15em;
+            margin-bottom: clamp(16px, 3vh, 30px);
+            text-shadow: 0 0 20px rgba(255, 215, 0, .3)
+        }
+
+        .video-title::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #c9a96e, transparent);
+            margin: 12px auto 0
+        }
+
+        .video-wrap {
+            width: 100%;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(201, 169, 110, .2);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, .5);
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity .8s ease, transform .8s ease
+        }
+
+        .video-wrap.visible {
+            opacity: 1;
+            transform: translateY(0)
+        }
+
+        .video-wrap video {
+            width: 100%;
+            display: block
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- 红包雨（全局固定） -->
+    <div class="hongbao-rain" id="hongbaoRain"></div>
+    <!-- 梅花飘落（全局固定） -->
+    <div class="petals" id="petals"></div>
+    <!-- 灯笼（全局固定） -->
+    <div class="lanterns" id="lanterns">
+        <div class="lantern">
+            <div class="lantern-string"></div>
+            <div class="lantern-top"></div>
+            <div class="lantern-body"></div>
+            <div class="lantern-tassel"></div>
+        </div>
+        <div class="lantern">
+            <div class="lantern-string"></div>
+            <div class="lantern-top"></div>
+            <div class="lantern-body"></div>
+            <div class="lantern-tassel"></div>
+        </div>
+        <div class="lantern">
+            <div class="lantern-string"></div>
+            <div class="lantern-top"></div>
+            <div class="lantern-body"></div>
+            <div class="lantern-tassel"></div>
+        </div>
+        <div class="lantern">
+            <div class="lantern-string"></div>
+            <div class="lantern-top"></div>
+            <div class="lantern-body"></div>
+            <div class="lantern-tassel"></div>
+        </div>
+    </div>
+    <!-- 烟花Canvas（全局固定） -->
+    <canvas class="fireworks-canvas" id="fireworksCanvas"></canvas>
+    <!-- 音乐按钮 -->
+    <div class="music-btn" id="musicBtn">
+        <div class="note">♪</div>
+    </div>
+
+    <!-- ===================== 第一屏：卷轴 ===================== -->
+    <section class="hero" id="hero">
+        <div class="stars" id="stars"></div>
+        <div class="cover-seal" id="coverSeal">
+            <div class="seal-stamp">展<br>卷</div>
+            <div class="cover-hint">— 点击展开卷轴 —</div>
+        </div>
+        <div class="scroll-wrap" id="scrollWrap">
+            <div class="rod rod-left"></div>
+            <div class="paper-container">
+                <div class="paper">
+                    <div class="content">
+                        <div class="line title-horse" data-delay="300">🐴</div>
+                        <div class="line title-main" data-delay="600">恭贺新禧</div>
+                        <div class="line">
+                            <div class="divider" data-delay="900"></div>
+                        </div>
+                        <div class="line blessing-pair" data-delay="1200">马到成功<span>·</span>万事如意</div>
+                        <div class="line blessing-pair" data-delay="1600">龙马精神<span>·</span>前程似锦</div>
+                        <div class="line blessing-pair" data-delay="2000">一马当先<span>·</span>步步高升</div>
+                        <div class="line blessing-pair" data-delay="2400">万马奔腾<span>·</span>阖家幸福</div>
+                        <div class="line">
+                            <div class="divider" data-delay="2800"></div>
+                        </div>
+                        <div class="line footer-text" data-delay="3200">新的一年<br>愿你策马扬鞭 驰骋人生 🎊</div>
+                        <div class="stamp" id="stamp" data-delay="3800">福</div>
+                        <div class="date-text" id="dateText" data-delay="4200">丙午年 · 新春</div>
+                    </div>
+                    <div class="ink-horse" id="inkHorse">🐎</div>
+                </div>
+            </div>
+            <div class="rod rod-right"></div>
+        </div>
+        <div class="scroll-hint" id="scrollHint">
+            <div class="scroll-hint-text">向下滑动 探索更多</div>
+            <div class="scroll-hint-arrow">▼</div>
+        </div>
+    </section>
+
+    <!-- ===================== 滚动内容区 ===================== -->
+    <div class="scroll-content">
+
+        <!-- ===== 年味画卷 ===== -->
+        <div class="section">
+            <div class="section-title">🏮 年味画卷</div>
+
+            <!-- a1: 春联年景 -->
+            <div class="card" data-anim>
+                <img class="card-img" src="a1.png" alt="春联年景">
+                <div class="card-body">
+                    <div class="card-title">🧨 春回大地 福满人间</div>
+                    <div class="card-text">家家户户贴春联、挂灯笼，大街小巷满是年的味道。孩子们欢笑着放鞭炮，长辈们笑盈盈地看着，这就是最温暖的中国年。</div>
+                </div>
+            </div>
+
+            <!-- a4: 烟花 -->
+            <div class="banner" data-anim>
+                <img src="a4.png" alt="烟花绚烂">
+                <div class="banner-overlay">
+                    <div class="banner-text">🎆 烟花璀璨 照亮新年</div>
+                </div>
+            </div>
+
+            <!-- 祝福语网格 -->
+            <div class="wish-grid">
+                <div class="wish-item" data-anim>
+                    <div class="wish-emoji">🐴</div>
+                    <div class="wish-text">马到成功<br>事业腾飞</div>
+                </div>
+                <div class="wish-item" data-anim>
+                    <div class="wish-emoji">💰</div>
+                    <div class="wish-text">财源广进<br>日进斗金</div>
+                </div>
+                <div class="wish-item" data-anim>
+                    <div class="wish-emoji">❤️</div>
+                    <div class="wish-text">家庭幸福<br>美满和谐</div>
+                </div>
+                <div class="wish-item" data-anim>
+                    <div class="wish-emoji">🌟</div>
+                    <div class="wish-text">前程似锦<br>星光璀璨</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="separator">✦ ✦ ✦</div>
+
+        <!-- ===== 团圆时光 ===== -->
+        <div class="section">
+            <div class="section-title">🥟 团圆时光</div>
+
+            <!-- a2: 年夜饭 -->
+            <div class="card" data-anim>
+                <img class="card-img" src="a2.png" alt="年夜饭">
+                <div class="card-body">
+                    <div class="card-title">🍲 年夜饭 · 团圆的味道</div>
+                    <div class="card-text">一家人围坐在一起，热气腾腾的年夜饭，欢声笑语中品尝着团圆的幸福。年年有余，岁岁平安，这顿饭吃的是亲情与温暖。</div>
+                </div>
+            </div>
+
+            <!-- a5: 包饺子 -->
+            <div class="card" data-anim>
+                <img class="card-img" src="a5.png" alt="包饺子">
+                <div class="card-body">
+                    <div class="card-title">🥟 饺子里的年味</div>
+                    <div class="card-text">全家老少齐上阵，擀皮的擀皮，包馅的包馅。一个个饺子承载着新年的期盼——健康、平安、好运通通包进去！</div>
+                </div>
+            </div>
+
+            <!-- 更多祝福 -->
+            <div class="wish-grid">
+                <div class="wish-item" data-anim>
+                    <div class="wish-emoji">🧧</div>
+                    <div class="wish-text">恭喜发财<br>红包拿来</div>
+                </div>
+                <div class="wish-item" data-anim>
+                    <div class="wish-emoji">🎊</div>
+                    <div class="wish-text">新年快乐<br>万事如意</div>
+                </div>
+                <div class="wish-item" data-anim>
+                    <div class="wish-emoji">🏮</div>
+                    <div class="wish-text">张灯结彩<br>喜气洋洋</div>
+                </div>
+                <div class="wish-item" data-anim>
+                    <div class="wish-emoji">🍊</div>
+                    <div class="wish-text">大吉大利<br>好运连连</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="separator">✦ ✦ ✦</div>
+
+        <!-- ===== 新春祝福 ===== -->
+        <div class="section">
+            <div class="section-title">🎉 新春祝福</div>
+
+            <!-- a3: 拜年 -->
+            <div class="card" data-anim>
+                <img class="card-img" src="a3.jpg" alt="拜年">
+                <div class="card-body">
+                    <div class="card-title">🙏 新春拜年 · 恭喜恭喜</div>
+                    <div class="card-text">新春佳节，全家穿上喜庆的新衣，互相拜年送祝福。一声"新年好"，道出满满的关怀；一个拥抱，传递温暖的力量。</div>
+                </div>
+            </div>
+
+            <!-- a6: 贴福字 -->
+            <div class="banner" data-anim>
+                <img src="a6.png" alt="贴福字">
+                <div class="banner-overlay">
+                    <div class="banner-text">🏠 贴福字 · 福到万家</div>
+                </div>
+            </div>
+
+            <!-- a7: 发红包 -->
+            <div class="card" data-anim>
+                <img class="card-img" src="a7.png" alt="发红包">
+                <div class="card-body">
+                    <div class="card-title">🧧 红包送福 · 压岁钱到</div>
+                    <div class="card-text">长辈们笑呵呵地递上红包，孩子们欢天喜地地接过。红包里装的是祝福，更是一份沉甸甸的爱与期望。</div>
+                </div>
+            </div>
+
+            <!-- 最后一组祝福 -->
+            <div class="wish-grid">
+                <div class="wish-item" data-anim>
+                    <div class="wish-emoji">📚</div>
+                    <div class="wish-text">学业进步<br>金榜题名</div>
+                </div>
+                <div class="wish-item" data-anim>
+                    <div class="wish-emoji">💪</div>
+                    <div class="wish-text">身体健康<br>龙马精神</div>
+                </div>
+                <div class="wish-item" data-anim>
+                    <div class="wish-emoji">🏡</div>
+                    <div class="wish-text">阖家欢乐<br>幸福安康</div>
+                </div>
+                <div class="wish-item" data-anim>
+                    <div class="wish-emoji">🐴</div>
+                    <div class="wish-text">一马当先<br>马年大吉</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== 新年视频 ===== -->
+        <div class="video-section">
+            <div class="video-title">🎬 新年祝福视频</div>
+            <div class="video-wrap" data-anim>
+                <video src="sp.mp4" controls playsinline webkit-playsinline preload="auto" poster="a4.png"></video>
+            </div>
+        </div>
+
+        <!-- ===== 页脚 ===== -->
+        <div class="page-footer">
+            <div class="footer-horse">🐴</div>
+            <div class="footer-wish">2026 · 马年大吉</div>
+            <div class="footer-sub">愿所有美好如期而至 🎊</div>
+        </div>
+
+    </div><!-- /scroll-content -->
+
+    <script>
+        // ========== 星空 ==========
+        !function () {
+            const c = document.getElementById('stars');
+            for (let i = 0; i < 50; i++) {
+                const s = document.createElement('div'); s.className = 'star';
+                s.style.cssText = `left:${Math.random() * 100}%;top:${Math.random() * 70}%;width:${1 + Math.random() * 2}px;height:${1 + Math.random() * 2}px;animation-duration:${1.5 + Math.random() * 3}s;animation-delay:${Math.random() * 3}s`;
+                c.appendChild(s);
+            }
+        }();
+
+        // ========== 梅花 ==========
+        !function () {
+            const c = document.getElementById('petals');
+            const types = ['🌸', '✿', '❀', '💮'];
+            for (let i = 0; i < 25; i++) {
+                const p = document.createElement('div'); p.className = 'petal';
+                p.textContent = types[Math.floor(Math.random() * types.length)];
+                p.style.cssText = `left:${Math.random() * 100}%;font-size:${8 + Math.random() * 12}px;animation-duration:${5 + Math.random() * 8}s;animation-delay:${Math.random() * 12}s`;
+                c.appendChild(p);
+            }
+        }();
+
+        // ========== 迷你烟花 ==========
+        const fwCanvas = document.getElementById('fireworksCanvas');
+        const fwCtx = fwCanvas.getContext('2d');
+        let fwParticles = [], fwRunning = false;
+        function resizeFw() { fwCanvas.width = window.innerWidth; fwCanvas.height = window.innerHeight }
+        window.addEventListener('resize', resizeFw); resizeFw();
+        const fwColors = [['#ff4444', '#ff6b6b', '#ffb3b3'], ['#ffd700', '#ffea00', '#fff9c4'], ['#ff6b35', '#ff8a50', '#ffcc80'], ['#4fc3f7', '#81d4fa', '#e1f5fe'], ['#ce93d8', '#e1bee7', '#ba68c8'], ['#69f0ae', '#a5d6a7', '#b9f6ca']];
+        function spawnFw(x, y) {
+            if (!x) { x = Math.random() * fwCanvas.width; y = fwCanvas.height * (.08 + Math.random() * .35) }
+            const pal = fwColors[Math.floor(Math.random() * fwColors.length)];
+            const n = 40 + Math.floor(Math.random() * 30);
+            for (let i = 0; i < n; i++) {
+                const a = Math.PI * 2 * i / n, sp = 1 + Math.random() * 3;
+                fwParticles.push({ x, y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, color: pal[Math.floor(Math.random() * pal.length)], alpha: 1, decay: .01 + Math.random() * .015, size: 1 + Math.random() * 1.5 });
+            }
+        }
+        function fwLoop() {
+            if (!fwRunning) return;
+            fwCtx.fillStyle = 'rgba(26,5,5,0.15)'; fwCtx.fillRect(0, 0, fwCanvas.width, fwCanvas.height);
+            fwParticles.forEach(p => {
+                p.vx *= .98; p.vy *= .98; p.vy += .02; p.x += p.vx; p.y += p.vy; p.alpha -= p.decay;
+                if (p.alpha > 0) { fwCtx.beginPath(); fwCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2); fwCtx.fillStyle = p.color; fwCtx.globalAlpha = p.alpha; fwCtx.shadowColor = p.color; fwCtx.shadowBlur = 6; fwCtx.fill(); fwCtx.shadowBlur = 0; fwCtx.globalAlpha = 1 }
+            });
+            fwParticles = fwParticles.filter(p => p.alpha > 0);
+            requestAnimationFrame(fwLoop);
+        }
+        function startFireworks() {
+            fwRunning = true; fwCtx.clearRect(0, 0, fwCanvas.width, fwCanvas.height);
+            for (let i = 0; i < 3; i++)setTimeout(() => spawnFw(), i * 300);
+            setInterval(() => spawnFw(), 900 + Math.random() * 1000);
+            requestAnimationFrame(fwLoop);
+        }
+        document.addEventListener('click', e => {
+            if (!fwRunning || e.target.closest('#musicBtn') || e.target.closest('#coverSeal')) return;
+            spawnFw(e.clientX, e.clientY);
+        });
+
+        // ========== 背景音乐 ==========
+        const bgMusic = new Audio('拜新年.mp3'); bgMusic.loop = true; bgMusic.volume = 0.6;
+        let musicPlaying = false;
+        function createMusic() { bgMusic.play().then(() => { musicPlaying = true }).catch(() => { }) }
+        function toggleMusic() {
+            if (musicPlaying) { bgMusic.pause(); musicPlaying = false; document.getElementById('musicBtn').classList.add('paused') }
+            else { bgMusic.play(); musicPlaying = true; document.getElementById('musicBtn').classList.remove('paused') }
+        }
+        document.getElementById('musicBtn').addEventListener('click', e => { e.stopPropagation(); toggleMusic() });
+
+        // ========== 卷轴展开 ==========
+        let opened = false;
+        function openScroll() {
+            if (opened) return; opened = true;
+            document.getElementById('coverSeal').classList.add('hidden');
+            document.getElementById('scrollWrap').classList.add('open');
+            setTimeout(() => document.getElementById('lanterns').classList.add('show'), 600);
+            setTimeout(() => { document.getElementById('fireworksCanvas').classList.add('show'); startFireworks() }, 1500);
+            setTimeout(() => { try { createMusic() } catch (e) { } document.getElementById('musicBtn').classList.add('show') }, 500);
+            // 文字动画
+            document.querySelectorAll('[data-delay]').forEach(el => {
+                const d = parseInt(el.dataset.delay);
+                setTimeout(() => { el.classList.add('show'); if (el.closest('.line') && el !== el.closest('.line')) el.closest('.line').classList.add('show') }, 2500 + d);
+            });
+            setTimeout(() => document.getElementById('stamp').classList.add('show'), 2500 + 3800);
+            setTimeout(() => document.getElementById('dateText').classList.add('show'), 2500 + 4200);
+            setTimeout(() => document.getElementById('inkHorse').classList.add('show'), 2500 + 3000);
+            // 向下提示
+            setTimeout(() => document.getElementById('scrollHint').classList.add('show'), 2500 + 5000);
+            // 红包雨
+            setTimeout(() => document.getElementById('hongbaoRain').classList.add('show'), 3000);
+        }
+        document.getElementById('coverSeal').addEventListener('click', openScroll);
+        document.getElementById('coverSeal').addEventListener('touchstart', e => { e.preventDefault(); openScroll() }, { once: true });
+
+        // ========== 滚动动画（IntersectionObserver） ==========
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target) } });
+        }, { threshold: 0.15 });
+        document.querySelectorAll('[data-anim]').forEach(el => observer.observe(el));
+
+        // ========== 红包雨 ==========
+        !function () {
+            const c = document.getElementById('hongbaoRain');
+            const items = ['🧧', '🧧', '🧧', '💰', '🎁', '✨', '🧧', '💰'];
+            for (let i = 0; i < 20; i++) {
+                const h = document.createElement('div'); h.className = 'hongbao';
+                h.textContent = items[Math.floor(Math.random() * items.length)];
+                h.style.cssText = `left:${Math.random() * 100}%;font-size:${16 + Math.random() * 16}px;animation-duration:${5 + Math.random() * 7}s;animation-delay:${Math.random() * 15}s`;
+                c.appendChild(h);
+            }
+        }();
+    </script>
+</body>
+
+</html>
